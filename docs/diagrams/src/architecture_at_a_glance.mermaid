@@ -1,0 +1,38 @@
+%% ARCHITECTURE AT A GLANCE — README deeper view. The signal/control planes side by side.
+flowchart LR
+    subgraph Operator ["Operator"]
+        OP["Browser / SSH<br/>over tailnet"]
+    end
+
+    subgraph Appliance ["OOB appliance — PiKVM v3"]
+        TS["tailscaled<br/>(mesh identity)"]
+        KVMD["kvmd<br/>(API + auth + session)"]
+        UST["ustreamer<br/>(H.264 encode)"]
+        HID["otg HID<br/>(virtual KB/mouse)"]
+        ATX["ATX GPIO<br/>(power/reset)"]
+        TS --> KVMD
+        KVMD --> UST
+        KVMD --> HID
+        KVMD --> ATX
+    end
+
+    subgraph Fanout ["Console fan-out"]
+        MUX["HDMI/USB switch<br/>+ UART select"]
+        H["Hosts 1..N<br/>(headless)"]
+        MUX --- H
+    end
+
+    OP -->|"video down"| KVMD
+    OP -->|"keystrokes up"| KVMD
+    UST -->|"capture in"| MUX
+    HID -->|"USB out"| MUX
+    ATX -. "power control" .-> H
+
+    style OP fill:#2980b9,color:#fff,stroke:#1f6fa5
+    style KVMD fill:#2c3e50,color:#fff,stroke:#1a252f
+    style UST fill:#8e44ad,color:#fff,stroke:#713f8f
+    style HID fill:#8e44ad,color:#fff,stroke:#713f8f
+    style ATX fill:#d35400,color:#fff,stroke:#a04000
+    style TS fill:#16a085,color:#fff,stroke:#0e6655
+    style MUX fill:#8e44ad,color:#fff,stroke:#713f8f
+    style H fill:#27ae60,color:#fff,stroke:#1e8449

@@ -1,0 +1,14 @@
+%% LIFECYCLE — OOB appliance state machine. Each transition maps to a runbook.
+stateDiagram-v2
+    [*] --> Flashed
+    Flashed --> Assembled: HAT + switch cabling (profile rb 01-02)
+    Assembled --> Meshed: tailnet enroll + ACL tag (profile rb 03)
+    Meshed --> Tuned: streamer fps/GOP per target (profile rb 04)
+    Tuned --> Operating: console reachable + power-cycle path tested (checkout)
+    Operating --> Operating: tune another target -> rw/ro edit (profile rb 04)
+    Operating --> Recovering: target host down -> console + ATX/PDU reset (_common recovery)
+    Recovering --> Operating
+    Operating --> Degraded: appliance issue (throttle / DERP / SD wear)
+    Degraded --> Operating: cold-spare swap or remediation (_common 08)
+    Operating --> Decommissioned: deauth tailnet node -> wipe media (_common 09)
+    Decommissioned --> [*]

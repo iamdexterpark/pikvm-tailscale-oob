@@ -1,0 +1,34 @@
+flowchart LR
+    subgraph Target ["1. Target Host SVI"]
+        GPU["GPU Framebuffer<br/>1080p @ 50/60Hz"]
+        HDMI["HDMI Output<br/>RGB / TMDS Signaling"]
+    end
+
+    subgraph PiKVM ["2. PiKVM Appliance (Pi 4)"]
+        CSI["TC358743 Bridge<br/>HDMI → CSI-2 Conversion<br/>RGB to YUV422"]
+        MEM["SoC RAM Buffer<br/>Direct Memory Access (DMA)"]
+        ENC["Broadcom H.264 SoC Encoder<br/>Hardware Encoding<br/>YUV422 to YUV420p (Chroma 4:2:0)"]
+    end
+
+    subgraph Overlay ["3. Network Overlay (Tailscale)"]
+        Mesh["WireGuard Tunnel<br/>WebRTC RTP/SRTP Packets<br/>Dynamic Congestion Control"]
+    end
+
+    subgraph Operator ["4. Operator Workstation"]
+        DEC["Browser H.264 Decoder<br/>Hardware-accelerated rendering"]
+        Screen["KVM Web Console View<br/>Low-latency canvas paint"]
+    end
+
+    GPU --> HDMI
+    HDMI -->|"TMDS lines"| CSI
+    CSI -->|"CSI-2 lanes"| MEM
+    MEM --> ENC
+    ENC -->|"WebRTC / UDP"| Mesh
+    Mesh --> DEC
+    DEC --> Screen
+
+    style GPU fill:#2980b9,color:#fff,stroke:#1f6fa5
+    style CSI fill:#2c3e50,color:#fff,stroke:#1a252f
+    style ENC fill:#8e44ad,color:#fff,stroke:#713f8f
+    style Mesh fill:#e74c3c,color:#fff,stroke:#c0392b
+    style Screen fill:#27ae60,color:#fff,stroke:#1e8449

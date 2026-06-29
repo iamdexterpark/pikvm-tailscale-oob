@@ -1,0 +1,11 @@
+%% HERO DIAGRAM — top of README, directly under the thesis.
+%% The whole story in one picture: operator anywhere -> mesh -> isolated appliance -> dead hosts.
+flowchart LR
+    OP["<b>Operator</b><br/>anywhere"] -->|"WireGuard mesh<br/>(no public port)"| KVM["<b>OOB Appliance</b><br/>PiKVM on isolated VLAN"]
+    KVM -->|"HDMI + USB HID<br/>below the OS"| SW["<b>KVM Switch</b><br/>1 console, N hosts"]
+    SW -->|"firmware-level<br/>control"| HOSTS["<b>Headless Hosts</b><br/>even when the OS is dead"]
+
+    style OP fill:#2980b9,color:#fff,stroke:#1f6fa5
+    style KVM fill:#2c3e50,color:#fff,stroke:#1a252f
+    style SW fill:#8e44ad,color:#fff,stroke:#713f8f
+    style HOSTS fill:#27ae60,color:#fff,stroke:#1e8449
